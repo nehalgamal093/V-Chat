@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:v_chat/presentation/pages/contacts_page/page/contacts_page.dart';
 import 'package:v_chat/presentation/pages/login_page/widgets/custom_span_text.dart';
 import 'package:v_chat/presentation/pages/login_page/widgets/custom_text_field.dart';
 import 'package:v_chat/presentation/pages/login_page/widgets/main_btn.dart';
@@ -24,7 +25,14 @@ class LoginPage extends StatelessWidget {
             customTextField(context, StringManager.email),
             customTextField(context, StringManager.password),
             const SizedBox(height: 50),
-            mainBtn(context, StringManager.login),
+            InkWell(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const ContactsPage()));
+                },
+                child: mainBtn(context, StringManager.login)),
             const SizedBox(height: 10),
             InkWell(
               onTap: () {
