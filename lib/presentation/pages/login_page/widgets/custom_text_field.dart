@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:v_chat/presentation/resources/color_manager.dart';
 
-Widget customTextField(BuildContext context, String hintText) {
+Widget customTextField(
+    BuildContext context, String hintText, TextEditingController controller) {
   double width = MediaQuery.of(context).size.width;
 
   return Container(
@@ -10,6 +11,7 @@ Widget customTextField(BuildContext context, String hintText) {
     margin: const EdgeInsets.all(10),
     decoration: const BoxDecoration(),
     child: TextField(
+      controller: controller,
       decoration: InputDecoration(
         hintText: hintText,
         hintStyle: const TextStyle(color: ColorManager.lightGrey),

@@ -7,8 +7,11 @@ import 'package:v_chat/presentation/pages/login_page/widgets/main_img.dart';
 import 'package:v_chat/presentation/resources/string_manager.dart';
 
 class RegisterPage extends StatelessWidget {
-  const RegisterPage({super.key});
-
+  RegisterPage({super.key});
+  final TextEditingController usernameEditingController =
+      TextEditingController();
+  final TextEditingController passwordEditingController =
+      TextEditingController();
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
@@ -21,15 +24,17 @@ class RegisterPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             mainImg(),
-            customTextField(context, StringManager.email),
-            customTextField(context, StringManager.password),
+            customTextField(
+                context, StringManager.email, usernameEditingController),
+            customTextField(
+                context, StringManager.password, passwordEditingController),
             const SizedBox(height: 50),
             mainBtn(context, StringManager.register),
             const SizedBox(height: 10),
             InkWell(
               onTap: () {
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => const LoginPage()));
+                    MaterialPageRoute(builder: (context) => LoginPage()));
               },
               child: customSpanText(
                   StringManager.alreadyHaveAccount, StringManager.login),
