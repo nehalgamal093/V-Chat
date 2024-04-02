@@ -9,7 +9,6 @@ import 'package:v_chat/presentation/pages/login_page/widgets/main_btn.dart';
 import 'package:v_chat/presentation/pages/login_page/widgets/main_img.dart';
 import 'package:v_chat/presentation/pages/register_page/pages/register_page.dart';
 import 'package:v_chat/presentation/resources/string_manager.dart';
-import 'package:v_chat/services/auth/auth.dart';
 
 class LoginPage extends StatelessWidget {
   LoginPage({super.key});

@@ -1,7 +1,6 @@
+// ignore: depend_on_referenced_packages
 import 'package:bloc/bloc.dart';
-import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:v_chat/services/auth/auth.dart';
 
 part 'login_event.dart';

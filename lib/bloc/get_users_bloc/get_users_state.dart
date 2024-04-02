@@ -4,21 +4,22 @@ enum GetUsersStatus { initial, loading, loaded, error }
 
 class GetUsersState extends Equatable {
   final GetUsersStatus getUsersStatus;
-  final dynamic response;
+  final List<dynamic> userModel;
 
-  const GetUsersState({required this.getUsersStatus, required this.response});
+  const GetUsersState({required this.getUsersStatus, required this.userModel});
 
   factory GetUsersState.initial() {
     return const GetUsersState(
-        getUsersStatus: GetUsersStatus.initial, response: '');
+        getUsersStatus: GetUsersStatus.initial, userModel: []);
   }
 
-  GetUsersState copyWith({GetUsersStatus? getUsersStatus, dynamic response}) {
+  GetUsersState copyWith(
+      {GetUsersStatus? getUsersStatus, List<dynamic>? userModel}) {
     return GetUsersState(
         getUsersStatus: getUsersStatus ?? this.getUsersStatus,
-        response: response ?? this.response);
+        userModel: userModel ?? this.userModel);
   }
 
   @override
-  List<Object?> get props => [getUsersStatus, response];
+  List<Object?> get props => [getUsersStatus, userModel];
 }

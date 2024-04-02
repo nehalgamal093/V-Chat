@@ -1,7 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:dio_cookie_manager/dio_cookie_manager.dart';
-import 'package:cookie_jar/cookie_jar.dart';
 
 class Auth {
   Future<Response?> login(String username, String password) async {
@@ -19,7 +17,8 @@ class Auth {
 
       SharedPreferences prefs = await SharedPreferences.getInstance();
       prefs.setString('user_id', response.data['_id']);
-      print('ID ${response.data['_id']}');
+      prefs.setString('token', response.data['token']);
+
       return response;
     } catch (e) {
       // ignore: use_rethrow_when_possible

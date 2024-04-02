@@ -1,32 +1,40 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:v_chat/bloc/get_messages_bloc/get_messages_bloc.dart';
 import 'package:v_chat/presentation/pages/chat_page/page/chat_page.dart';
 
-Widget contactTile(BuildContext context) {
+Widget contactTile(
+    BuildContext context, String fullName, String imgUrl, String id) {
   return InkWell(
     onTap: () {
       Navigator.push(
-          context, MaterialPageRoute(builder: (context) => ChatPage()));
+          context,
+          MaterialPageRoute(
+              builder: (context) => ChatPage(
+                    id: id,
+                  )));
+      context.read<GetMessagesBloc>().add(MessagesEvent(id: id));
     },
     child: Container(
       margin: const EdgeInsets.all(10),
-      child: const Row(
+      child: Row(
         children: [
           SizedBox(
             width: 80,
             height: 80,
             child: ClipOval(
-              child: Image(image: AssetImage('assets/images/girl.png')),
+              child: Image(image: NetworkImage(imgUrl)),
             ),
           ),
-          SizedBox(width: 20),
+          const SizedBox(width: 20),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Nehal Gamal',
-                style: TextStyle(fontSize: 20),
+                fullName,
+                style: const TextStyle(fontSize: 20),
               ),
-              Text('Hi', style: TextStyle(fontSize: 15))
+              const Text('Hi', style: TextStyle(fontSize: 15))
             ],
           )
         ],

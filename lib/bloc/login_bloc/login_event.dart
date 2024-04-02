@@ -11,7 +11,7 @@ class Login extends LoginEvent {
   final String username;
   final String password;
 
-  Login({
+  const Login({
     required this.username,
     required this.password,
   });
