@@ -1,5 +1,9 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:v_chat/bloc/get_messages_bloc/get_messages_bloc.dart';
+import 'package:v_chat/bloc/get_users_bloc/get_users_bloc.dart';
 import 'package:v_chat/presentation/pages/login_page/page/login_page.dart';
 
 dialogBox(BuildContext context) {
@@ -47,11 +51,13 @@ dialogBox(BuildContext context) {
                       onTap: () async {
                         SharedPreferences preferences =
                             await SharedPreferences.getInstance();
-                        preferences.clear();
+                        await preferences.clear();
                         Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
                                 builder: (context) => LoginPage()));
+                        BlocProvider.of<GetUsersBloc>(context).add(Logout());
+                        await FirebaseMessaging.instance.deleteToken();
                       },
                       child: Container(
                         padding:

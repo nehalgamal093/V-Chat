@@ -8,3 +8,5 @@ sealed class GetUsersEvent extends Equatable {
 }
 
 class GetUsers extends GetUsersEvent {}
+
+class Logout extends GetUsersEvent {}

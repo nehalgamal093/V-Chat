@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DioHelpers {
@@ -6,7 +7,7 @@ class DioHelpers {
   static init() {
     dio = Dio(BaseOptions(
         validateStatus: (_) => true,
-        baseUrl: 'https://chat-app-nehal-gamal.onrender.com/api/',
+        baseUrl: dotenv.env['API_URL'].toString(),
         headers: {'Content-Type': 'application/json'}));
   }
 

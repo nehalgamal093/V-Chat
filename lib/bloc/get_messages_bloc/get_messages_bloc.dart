@@ -14,22 +14,25 @@ class GetMessagesBloc extends Bloc<GetMessagesEvent, GetMessagesState> {
       try {
         var val = await DioHelpers.getData(endPoints: 'messages/${event.id}');
         List<dynamic> messages = val.data.map((e) => e).toList();
+        print('Valiee ${val}');
         emit(state.copyWith(
             messagesStatus: GetMessagesStatus.loaded, messages: messages));
       } catch (e) {
         emit(state.copyWith(messagesStatus: GetMessagesStatus.error));
+        print('Error from get messages bloc :: ${e}');
       }
     });
     on<ReceiveMessage>((event, emit) async {
       try {
         var val = await DioHelpers.getData(endPoints: 'messages/${event.id}');
         List<dynamic> messages = val.data.map((e) => e).toList();
-
+        print('Valiee ${val}');
         emit(state.copyWith(
             messagesStatus: GetMessagesStatus.receiveMessage,
             messages: messages));
       } catch (e) {
         emit(state.copyWith(messagesStatus: GetMessagesStatus.error));
+        print('Error from get messages bloc :: ${e}');
       }
     });
   }

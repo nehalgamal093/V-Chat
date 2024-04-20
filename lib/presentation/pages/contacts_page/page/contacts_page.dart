@@ -1,14 +1,43 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:v_chat/bloc/get_messages_bloc/get_messages_bloc.dart';
 import 'package:v_chat/bloc/get_users_bloc/get_users_bloc.dart';
+import 'package:v_chat/presentation/pages/chat_page/page/chat_page.dart';
 import 'package:v_chat/presentation/pages/contacts_page/widgets/contact_tile.dart';
 import 'package:v_chat/presentation/pages/custom_widgets/dialog_alert.dart';
-import 'package:v_chat/presentation/pages/login_page/page/login_page.dart';
 import 'package:v_chat/presentation/pages/skeleton/contacts_skeleton/contacts_skeleton.dart';
+import 'package:v_chat/utils/notification.dart';
 
-class ContactsPage extends StatelessWidget {
+class ContactsPage extends StatefulWidget {
   const ContactsPage({super.key});
+
+  @override
+  State<ContactsPage> createState() => _ContactsPageState();
+}
+
+class _ContactsPageState extends State<ContactsPage> {
+  initialize() async {
+    final fcmToken = await FirebaseMessaging.instance.getToken();
+    print('fcm from token ${fcmToken}');
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    FirebaseMessaging.onMessage.listen((RemoteMessage event) {
+      print("message recieved");
+      if (event != null &&
+          prefs.getString('sender_id') !=
+              event.data['senderId'].replaceAll('"', ''))
+        showNotification(
+            event.data['title'], event.data['body'], event.data['senderId']);
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    initialize();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,11 +49,11 @@ class ContactsPage extends StatelessWidget {
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            const DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.blue,
+            DrawerHeader(
+              decoration: const BoxDecoration(
+                color: Colors.white,
               ),
-              child: Text('Drawer Header'),
+              child: Image.asset('assets/images/live-chat.png'),
             ),
             ListTile(
               leading: const Icon(
@@ -53,6 +82,8 @@ class ContactsPage extends StatelessWidget {
                       state.userModel[index]['profilePic'],
                       state.userModel[index]['_id']);
                 });
+          } else if (state.getUsersStatus == GetUsersStatus.error) {
+            return Text('Error');
           } else {
             return Container();
           }

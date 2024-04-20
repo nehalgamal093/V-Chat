@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:v_chat/bloc/get_messages_bloc/get_messages_bloc.dart';
 import 'package:v_chat/presentation/pages/chat_page/widgets/chat_message.dart';
@@ -10,8 +11,10 @@ import 'package:v_chat/services/chat/chat.dart';
 
 class ChatPage extends StatefulWidget {
   final String id;
-
-  const ChatPage({super.key, required this.id});
+  final String name;
+  final String img;
+  const ChatPage(
+      {super.key, required this.id, required this.name, required this.img});
 
   @override
   State<ChatPage> createState() => _ChatPageState();
@@ -20,6 +23,7 @@ class ChatPage extends StatefulWidget {
 class _ChatPageState extends State<ChatPage> {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
+
   List<dynamic> list = [];
   late final IO.Socket _socket;
   String? userId;
@@ -38,7 +42,7 @@ class _ChatPageState extends State<ChatPage> {
       id = prefs.getString('user_id').toString();
     });
     _socket = IO.io(
-        'https://chat-app-nehal-gamal.onrender.com',
+        dotenv.env['BASE_URL'],
         IO.OptionBuilder()
             .setTransports(['websocket'])
             .setQuery({'userId': id})
@@ -53,9 +57,10 @@ class _ChatPageState extends State<ChatPage> {
             "senderId": widget.id,
             "receiverId": userId,
             "message": data['message'],
+            "createdAt": DateTime.now()
           });
         });
-        Future.delayed(const Duration(milliseconds: 2000), () {
+        Future.delayed(const Duration(milliseconds: 1500), () {
           if (_scrollController.hasClients) {
             _scrollController.jumpTo(
               _scrollController.position.maxScrollExtent,
@@ -66,9 +71,22 @@ class _ChatPageState extends State<ChatPage> {
     });
   }
 
+  saveIdOfCurrentSender() async {
+    SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
+    //save id of the sender so it will not send notification when chat is open
+    sharedPrefs.setString('sender_id', widget.id);
+  }
+
+  removeIdOfCurrentSender() async {
+    SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
+    //save id of the sender so it will not send notification when chat is open
+    sharedPrefs.remove('sender_id');
+  }
+
   @override
   void initState() {
     super.initState();
+    saveIdOfCurrentSender();
     _connectSocket();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Future.delayed(const Duration(milliseconds: 2000), () {
@@ -85,6 +103,7 @@ class _ChatPageState extends State<ChatPage> {
   @override
   void dispose() {
     _socket.disconnect();
+    removeIdOfCurrentSender();
     super.dispose();
   }
 
@@ -92,7 +111,17 @@ class _ChatPageState extends State<ChatPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Chat'),
+        title: Row(
+          children: [
+            CircleAvatar(
+              radius: 20,
+              backgroundColor: Colors.red,
+              child: Image.network(widget.img),
+            ),
+            const SizedBox(width: 10),
+            Text(widget.name),
+          ],
+        ),
       ),
       body: Container(
         decoration: const BoxDecoration(),
@@ -116,18 +145,19 @@ class _ChatPageState extends State<ChatPage> {
                             itemBuilder: (context, index) {
                               return chatMessage(
                                   list[index]['senderId'] != widget.id,
-                                  list[index]['message']);
+                                  list[index]['message'],
+                                  list[index]["createdAt"].substring(11, 16));
                             }),
                       ),
                       messageInput(context, _messageController, () async {
                         String msg = _messageController.text;
                         _messageController.clear();
                         setState(() {
-                          print('message is ${msg}');
                           list.add({
                             "senderId": userId,
                             "receiverId": widget.id,
                             "message": msg,
+                            "createdAt": DateTime.now()
                           });
                         });
                         Future.delayed(const Duration(milliseconds: 150), () {
@@ -153,7 +183,8 @@ class _ChatPageState extends State<ChatPage> {
                             itemBuilder: (context, index) {
                               return chatMessage(
                                   list[index]['senderId'] != widget.id,
-                                  list[index]['message']);
+                                  list[index]['message'],
+                                  list[index]["createdAt"].substring(11, 16));
                             }),
                       ),
                       messageInput(context, _messageController, () async {
@@ -164,6 +195,7 @@ class _ChatPageState extends State<ChatPage> {
                             "senderId": userId,
                             "receiverId": widget.id,
                             "message": _messageController.text,
+                            "createdAt": DateTime.now()
                           });
                         });
                         Future.delayed(const Duration(milliseconds: 150), () {
@@ -177,8 +209,10 @@ class _ChatPageState extends State<ChatPage> {
                       }, _scrollController)
                     ],
                   );
+                } else if (state.messagesStatus == GetMessagesStatus.error) {
+                  return const Text('Error');
                 } else {
-                  return Container();
+                  return const Text('Something else');
                 }
               },
             )),

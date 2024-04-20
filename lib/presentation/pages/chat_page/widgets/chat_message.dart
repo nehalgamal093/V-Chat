@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:v_chat/presentation/pages/chat_page/widgets/message_tail.dart';
 
-Widget chatMessage(bool isSender, String message) {
+Widget chatMessage(bool isSender, String message, String time) {
   return Stack(
     children: [
       Align(
@@ -14,6 +14,14 @@ Widget chatMessage(bool isSender, String message) {
             borderRadius: const BorderRadius.all(
               Radius.circular(10),
             ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.2),
+                spreadRadius: 1,
+                blurRadius: 7,
+                offset: Offset(0, 0), // changes position of shadow
+              ),
+            ],
           ),
           child: Padding(
             padding: const EdgeInsets.all(8.0),
@@ -33,9 +41,9 @@ Widget chatMessage(bool isSender, String message) {
                   child: Align(
                     alignment:
                         isSender ? Alignment.topRight : Alignment.centerLeft,
-                    child: const Text(
-                      '12:00 PM',
-                      style: TextStyle(fontSize: 8, color: Colors.white),
+                    child: Text(
+                      time,
+                      style: const TextStyle(fontSize: 8, color: Colors.white),
                     ),
                   ),
                 )
