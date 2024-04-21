@@ -146,7 +146,9 @@ class _ChatPageState extends State<ChatPage> {
                               return chatMessage(
                                   list[index]['senderId'] != widget.id,
                                   list[index]['message'],
-                                  list[index]["createdAt"].substring(11, 16));
+                                  list[index]["createdAt"]
+                                      .toString()
+                                      .substring(11, 16));
                             }),
                       ),
                       messageInput(context, _messageController, () async {
@@ -184,7 +186,9 @@ class _ChatPageState extends State<ChatPage> {
                               return chatMessage(
                                   list[index]['senderId'] != widget.id,
                                   list[index]['message'],
-                                  list[index]["createdAt"].substring(11, 16));
+                                  list[index]["createdAt"]
+                                      .toString()
+                                      .substring(11, 16));
                             }),
                       ),
                       messageInput(context, _messageController, () async {

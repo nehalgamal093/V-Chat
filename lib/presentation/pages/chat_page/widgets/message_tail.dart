@@ -6,7 +6,7 @@ class TrianglePainter extends CustomPainter {
   final double strokeWidth;
   final bool isSender;
   TrianglePainter(
-      {this.strokeColor = Colors.blue,
+      {this.strokeColor = const Color(0xfffe5151),
       this.strokeWidth = 3,
       this.paintingStyle = PaintingStyle.fill,
       required this.isSender});
@@ -14,7 +14,9 @@ class TrianglePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     Paint paint = Paint()
-      ..color = isSender ? Colors.blue : Colors.grey
+      ..color = isSender
+          ? const Color(0xfffe5151)
+          : const Color.fromARGB(255, 218, 236, 249)
       ..strokeWidth = strokeWidth
       ..style = paintingStyle;
 

@@ -5,7 +5,8 @@ import 'package:v_chat/bloc/get_messages_bloc/get_messages_bloc.dart';
 import 'package:v_chat/main.dart';
 import 'package:v_chat/presentation/pages/chat_page/page/chat_page.dart';
 
-onOpenFromBackground(String id, String name) async {
+@pragma('vm:entry-point')
+onOpenFromBackground(String id, String name, String img) async {
   navigatorKey.currentContext!
       .read<GetMessagesBloc>()
       .add(MessagesEvent(id: id.replaceAll('"', '')));
@@ -14,10 +15,20 @@ onOpenFromBackground(String id, String name) async {
       return ChatPage(
         id: id.replaceAll('"', ''),
         name: name.replaceAll('"', ''),
-        img: 'https://avatar.iran.liara.run/public/girl?username=nono',
+        img: img.replaceAll('"', ''),
       );
     }),
   );
+}
+
+@pragma('vm:entry-point')
+openBackground(r) {
+//  onOpenFromBackground(r.id.toString(), r.payload.)
+  final List<String> data = r.payload!.split(','); // Assuming comma separation
+  final String id = data[1];
+  final String name = data[0];
+  final String img = data[2];
+  onOpenFromBackground(id, name, img);
 }
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
@@ -34,11 +45,13 @@ Future<void> initializeNotificationPlugin() async {
         r.payload!.split(','); // Assuming comma separation
     final String id = data[1];
     final String name = data[0];
-    onOpenFromBackground(id, name);
-  });
+    final String img = data[2];
+    onOpenFromBackground(id, name, img);
+  }, onDidReceiveBackgroundNotificationResponse: openBackground);
 }
 
-Future<void> showNotification(String name, String body, String id) async {
+Future<void> showNotification(
+    String name, String body, String id, String img) async {
   const NotificationDetails notificationDetails = NotificationDetails(
     android: AndroidNotificationDetails(
       'v_chat_gi7070',
@@ -53,5 +66,5 @@ Future<void> showNotification(String name, String body, String id) async {
   );
 
   await flutterLocalNotificationsPlugin.show(0, name, body, notificationDetails,
-      payload: '${name},${id}');
+      payload: '${name},${id},${img}');
 }

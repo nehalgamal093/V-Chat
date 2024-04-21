@@ -17,19 +17,20 @@ import 'package:v_chat/services/chat/chat.dart';
 import 'package:v_chat/services/dio/dio_helper.dart';
 import 'package:v_chat/utils/notification.dart';
 
-final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // ignore: unnecessary_null_comparison
   if (message != null) {
-    await showNotification(
-        message.data['title'], message.data['body'], message.data['senderId']);
+    await showNotification(message.data['title'], message.data['body'],
+        message.data['senderId'], message.data['senderImage']);
+    print('Sender Image ${message.data['senderImage']}');
   }
 }
 
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
- await dotenv.load(fileName: '.env');
+  await dotenv.load(fileName: '.env');
   initializeNotificationPlugin();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   await Firebase.initializeApp(
@@ -55,12 +56,12 @@ Future<void> main() async {
   //     }),
   //   );
   // });
-  FirebaseMessaging.instance.getInitialMessage().then((message) {
-    if (message != null) {
-      showNotification(message.data['title'], message.data['body'],
-          message.data['senderId']);
-    }
-  });
+  // FirebaseMessaging.instance.getInitialMessage().then((message) {
+  //   if (message != null) {
+  //     showNotification(message.data['title'], message.data['body'],
+  //         message.data['senderId'],);
+  //   }
+  // });
 
   await DioHelpers.init();
   SharedPreferences prefs = await SharedPreferences.getInstance();

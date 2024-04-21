@@ -12,6 +12,7 @@ Widget messageInput(BuildContext context, TextEditingController controller,
         children: [
           SizedBox(
             width: width * .80,
+            height: 50,
             child: TextField(
               onChanged: (val) {
                 scrollController.jumpTo(
@@ -21,6 +22,7 @@ Widget messageInput(BuildContext context, TextEditingController controller,
               controller: controller,
               style: Theme.of(context).textTheme.bodyMedium,
               decoration: InputDecoration(
+                  hintText: 'Send message..',
                   focusedBorder: OutlineInputBorder(
                       borderSide: const BorderSide(
                           width: 1, color: Color.fromARGB(255, 194, 194, 194)),
@@ -37,9 +39,12 @@ Widget messageInput(BuildContext context, TextEditingController controller,
           ),
           const SizedBox(width: 10),
           CircleAvatar(
-              backgroundColor: Colors.blue,
+              backgroundColor: const Color(0xfffe5151),
               child: IconButton(
-                  onPressed: onPressed, icon: const Icon(Icons.send_rounded))),
+                onPressed: onPressed,
+                icon: const Icon(Icons.send_rounded),
+                color: Colors.white,
+              )),
         ],
       ),
     ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:v_chat/presentation/pages/chat_page/widgets/message_tail.dart';
+import 'package:v_chat/utils/capitalize.dart';
 
 Widget chatMessage(bool isSender, String message, String time) {
   return Stack(
@@ -8,9 +9,15 @@ Widget chatMessage(bool isSender, String message, String time) {
         alignment: isSender ? Alignment.centerRight : Alignment.centerLeft,
         child: Container(
           margin: const EdgeInsets.only(left: 20, top: 10, right: 20),
-          constraints: const BoxConstraints(minWidth: 30.0, minHeight: 35.0),
+          constraints: const BoxConstraints(
+            minWidth: 50.0,
+            minHeight: 35.0,
+            maxWidth: 300,
+          ),
           decoration: BoxDecoration(
-            color: isSender ? Colors.blue : Colors.grey,
+            color: isSender
+                ? const Color(0xfffe5151)
+                : const Color.fromARGB(255, 218, 236, 249),
             borderRadius: const BorderRadius.all(
               Radius.circular(10),
             ),
@@ -19,7 +26,7 @@ Widget chatMessage(bool isSender, String message, String time) {
                 color: Colors.grey.withOpacity(0.2),
                 spreadRadius: 1,
                 blurRadius: 7,
-                offset: Offset(0, 0), // changes position of shadow
+                offset: const Offset(0, 0), // changes position of shadow
               ),
             ],
           ),
@@ -30,22 +37,20 @@ Widget chatMessage(bool isSender, String message, String time) {
                   isSender ? CrossAxisAlignment.start : CrossAxisAlignment.end,
               children: [
                 Text(
-                  message,
-                  style: const TextStyle(color: Colors.white),
+                  capitalizeName(message),
+                  style: TextStyle(
+                      color: isSender ? Colors.white : Colors.black,
+                      fontFamily: 'Montserrat',
+                      fontSize: 15),
                 ),
                 const SizedBox(
                   height: 5,
                 ),
-                SizedBox(
-                  width: 40,
-                  child: Align(
-                    alignment:
-                        isSender ? Alignment.topRight : Alignment.centerLeft,
-                    child: Text(
-                      time,
-                      style: const TextStyle(fontSize: 8, color: Colors.white),
-                    ),
-                  ),
+                Text(
+                  time,
+                  style: TextStyle(
+                      fontSize: 8,
+                      color: isSender ? Colors.white : Colors.black),
                 )
               ],
             ),

@@ -1,14 +1,14 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:v_chat/bloc/get_messages_bloc/get_messages_bloc.dart';
 import 'package:v_chat/bloc/get_users_bloc/get_users_bloc.dart';
-import 'package:v_chat/presentation/pages/chat_page/page/chat_page.dart';
 import 'package:v_chat/presentation/pages/contacts_page/widgets/contact_tile.dart';
 import 'package:v_chat/presentation/pages/custom_widgets/dialog_alert.dart';
 import 'package:v_chat/presentation/pages/skeleton/contacts_skeleton/contacts_skeleton.dart';
 import 'package:v_chat/utils/notification.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class ContactsPage extends StatefulWidget {
   const ContactsPage({super.key});
@@ -18,18 +18,35 @@ class ContactsPage extends StatefulWidget {
 }
 
 class _ContactsPageState extends State<ContactsPage> {
+  late final IO.Socket _socket;
+  bool isOnline = false;
   initialize() async {
-    final fcmToken = await FirebaseMessaging.instance.getToken();
-    print('fcm from token ${fcmToken}');
-    FirebaseMessaging messaging = FirebaseMessaging.instance;
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     FirebaseMessaging.onMessage.listen((RemoteMessage event) {
-      print("message recieved");
+      // ignore: unnecessary_null_comparison
       if (event != null &&
           prefs.getString('sender_id') !=
-              event.data['senderId'].replaceAll('"', ''))
-        showNotification(
-            event.data['title'], event.data['body'], event.data['senderId']);
+              event.data['senderId'].replaceAll('"', '')) {
+        showNotification(event.data['title'], event.data['body'],
+            event.data['senderId'], event.data['senderImage']);
+      }
+    });
+  }
+
+  _connectSocket() async {
+    _socket = IO.io(
+        dotenv.env['BASE_URL'],
+        IO.OptionBuilder()
+            .setTransports(['websocket'])
+            .enableForceNewConnection()
+            .build());
+    _socket.onConnect((data) => print('Connection established'));
+    _socket.onError((data) => print('Connect Error: $data'));
+    _socket.on('getOnlineUsers', (data) {
+      setState(() {
+        isOnline == !isOnline;
+        print('user is online ${isOnline == !isOnline}');
+      });
     });
   }
 
@@ -37,6 +54,7 @@ class _ContactsPageState extends State<ContactsPage> {
   void initState() {
     super.initState();
     initialize();
+    _connectSocket();
   }
 
   @override
@@ -80,10 +98,11 @@ class _ContactsPageState extends State<ContactsPage> {
                       context,
                       state.userModel[index]['fullName'],
                       state.userModel[index]['profilePic'],
-                      state.userModel[index]['_id']);
+                      state.userModel[index]['_id'],
+                      isOnline);
                 });
           } else if (state.getUsersStatus == GetUsersStatus.error) {
-            return Text('Error');
+            return const Text('Error');
           } else {
             return Container();
           }
